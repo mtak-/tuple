@@ -101,10 +101,10 @@ namespace fcc { namespace detail {
             : value(get_I<Is>(std::forward<UTuple>(utuple))...)
         {}
         
-        template<std::size_t... Is, typename Alloc, TupleLike UTuple>
+        template<typename Alloc, std::size_t... Is, TupleLike UTuple>
             requires TupleLeafPiecewiseAllocConstructible<tuple_leaf, Alloc, UTuple, Is...>
-        constexpr tuple_leaf(piecewise_construct_t, meta::iseq<Is...>, allocator_arg_t,
-                             const Alloc& alloc, UTuple&& utuple)
+        constexpr tuple_leaf(piecewise_construct_t, allocator_arg_t, const Alloc& alloc,
+                             meta::iseq<Is...>, UTuple&& utuple)
             noexcept(std::is_nothrow_constructible<tuple_leaf, allocator_arg_t, const Alloc&,
                                                    get_type<Is, UTuple&&>...>::value)
             : tuple_leaf(allocator_arg, alloc, get<Is>(std::forward<UTuple>(utuple))...)

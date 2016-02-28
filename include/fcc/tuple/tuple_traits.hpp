@@ -311,7 +311,7 @@ namespace fcc {
     
     template<typename T, typename Alloc, typename... UTuples>
     concept bool TuplePiecewiseAllocConstructible =
-        is_tuple_alloc_constructible<T, Alloc, UTuples...>::value;
+        is_piecewise_tuple_alloc_constructible<T, Alloc, UTuples...>::value;
     
     //////////////////////////////////////////////////////////////////////
     // tuple(piecewise_construct_t, TupleLike&&...) noexcept constructor
