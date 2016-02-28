@@ -250,11 +250,12 @@ tuple<std::vector<int>, double> foo()
 EXPLICIT constexpr tuple(const Types&...);
 ```
 
-Which means, according to the standard, this code is invalid ([wandbox](http://melpon.org/wandbox/permlink/Hdsgzkc5TnhDQqMp)):
+Which means, according to the standard, this code is invalid ([wandbox](http://melpon.org/wandbox/permlink/F5VYhzObecbcWmYh)):
 
 ```cpp
 // invalid
-tuple<std::vector<int>, int&&> a{{0, 0, 0, 0}, 9};
+int x = 9;
+tuple<std::vector<int>, int&&> a{{0, 0, 0, 0}, std::move(x)};
 tuple<std::unique_ptr<int>> b{{nullptr}};
 ```
 
@@ -476,13 +477,13 @@ The standard states that `piecewise_construct_t` and `allocator_arg_t` are essen
 
 ## Overload Resolution
 
-`fcc::tuple` properly constrains all `struct`'s, all `class`'s, all member functions, all non-member functions, all constructors, etc. This makes `fcc::tuple` totally SFINAE, and concept friendly. There's one TODO: the allocator concept is not verified at all.
+`fcc::tuple` properly constrains all `struct`'s, all `class`'s, all member functions, all non-member functions, all constructors, etc. This makes `fcc::tuple` totally SFINAE, and concept friendly. The `Allocator` concept is a bit looser than what the standard requires.
 
 The [Tuple Algorithms](#tuple-algorithms) are still missing some concepts, but they are still constrained in the oldschool SFINAE fashion.
 
 ## Tuple Algorithms
 
-**Motivation:** There's a ton of power in having algorithms to manipulate product types. The combinator `pretty` which creates a pretty printable version of any `TupleLike` type is defined in one line.
+**Motivation:** There's a ton of power in having algorithms to manipulate product types. The combinator `pretty`, which creates a pretty printable version of any `TupleLike` type, is defined in one line.
 
 ```cpp
 tuple_cat(make_tuple((const char*)"("),
