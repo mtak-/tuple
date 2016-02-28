@@ -168,7 +168,7 @@ namespace fcc {
         
         template<typename T, typename Alloc, typename... Args>
         struct is_nothrow_uses_alloc_constructible_<alloc_arg_ctor, T, Alloc, Args...>
-            : std::is_nothrow_constructible<allocator_arg_t, Alloc, T, Args...> {};
+            : std::is_nothrow_constructible<T, allocator_arg_t, Alloc, Args...> {};
         
         template<typename T, typename Alloc, typename... Args>
         struct is_nothrow_uses_alloc_constructible_<alloc_failed_ctor, T, Alloc, Args...>
@@ -205,7 +205,7 @@ namespace fcc {
         
         template<typename T, typename Alloc, typename... Args>
         struct is_uses_alloc_convertible_<alloc_arg_ctor, T, Alloc, Args...>
-            : is_convertible<allocator_arg_t, Alloc, T, Args...> {};
+            : is_convertible<T, allocator_arg_t, Alloc, Args...> {};
         
         template<typename T, typename Alloc, typename... Args>
         struct is_uses_alloc_convertible_<alloc_failed_ctor, T, Alloc, Args...> : std::false_type
