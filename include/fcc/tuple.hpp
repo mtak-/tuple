@@ -17,6 +17,8 @@
 #include <fcc/tuple/tuple_io.hpp>
 #include <fcc/tuple/tuple_operator.hpp>
 
+#include <fcc/detail/literals.hpp>
+
 namespace fcc {    
     namespace detail { struct tuple_access; }
     
@@ -407,6 +409,43 @@ namespace fcc {
         ///////////////////
         constexpr std::size_t size() const volatile noexcept
         { return sizeof...(Ts); }
+        
+        ///////////////
+        // OPERATOR[]
+        ///////////////
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, tuple&> operator[](meta::size_t<I>) & noexcept
+        { return get_I<I>(*this); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, tuple&&> operator[](meta::size_t<I>) && noexcept
+        { return get_I<I>(std::move(*this)); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, const tuple&> operator[](meta::size_t<I>) const& noexcept
+        { return get_I<I>(*this); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, const tuple&&> operator[](meta::size_t<I>) const&& noexcept
+        { return get_I<I>(std::move(*this)); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, volatile tuple&> operator[](meta::size_t<I>) volatile& noexcept
+        { return get_I<I>(*this); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, volatile tuple&&> operator[](meta::size_t<I>) volatile&& noexcept
+        { return get_I<I>(std::move(*this)); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, const volatile tuple&>
+        operator[](meta::size_t<I>) const volatile& noexcept
+        { return get_I<I>(*this); }
+        
+        template<std::size_t I> requires (I < sizeof...(Ts))
+        constexpr get_type<I, const volatile tuple&&>
+        operator[](meta::size_t<I>) const volatile&& noexcept
+        { return get_I<I>(std::move(*this)); }
     }; // tuple
     
     ///////////////////////

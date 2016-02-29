@@ -24,6 +24,8 @@ The actual implementation of `tuple` is header only. To use `fcc::tuple` (not th
 
 // optional, makes the tuple operators work with all TupleLike types
 using namespace fcc::operators;
+// optional, makes tup[1_c] syntax work. ripped off from boost::hana
+using namespace fcc::literals;
 
 int main() {
     fcc::tuple<int, float> tup = fcc::make_tuple(5, 8.f);
