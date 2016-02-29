@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+using namespace fcc::literals;
+
 struct my_alloc : std::allocator<int>
 {
     template<typename T>
@@ -47,10 +49,10 @@ int main() {
         A& operator=(const A&) = delete;
     };
     {
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<A>{fcc::piecewise_construct}).i == 44);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<A>{fcc::piecewise_construct, fcc::tuple<>{}}).i == 44);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<A>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}}).i == 44);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<A>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<>{}}).i == 44);
+        NOEXCEPT_CHECK(fcc::tuple<A>{fcc::piecewise_construct}[0_c].i == 44);
+        NOEXCEPT_CHECK(fcc::tuple<A>{fcc::piecewise_construct, fcc::tuple<>{}}[0_c].i == 44);
+        NOEXCEPT_CHECK(fcc::tuple<A>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}}[0_c].i == 44);
+        NOEXCEPT_CHECK(fcc::tuple<A>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<>{}}[0_c].i == 44);
     }
     
     struct B {
@@ -62,10 +64,10 @@ int main() {
         B& operator=(const B&) = delete;
     };
     {
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<B>{fcc::piecewise_construct, fcc::tuple<int, const char*>{{42}, "hello"}}).i == 42);
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<B>{fcc::piecewise_construct, fcc::tuple<int, const char*>{{42}, "hello"}}).s == "hello");
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<B>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, const char*>{{42}, "hello"}}).i == 42);
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<B>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, const char*>{{42}, "hello"}}).s == "hello");
+        EXCEPT_CHECK(fcc::tuple<B>{fcc::piecewise_construct, fcc::tuple<int, const char*>{{42}, "hello"}}[0_c].i == 42);
+        EXCEPT_CHECK(fcc::tuple<B>{fcc::piecewise_construct, fcc::tuple<int, const char*>{{42}, "hello"}}[0_c].s == "hello");
+        EXCEPT_CHECK(fcc::tuple<B>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, const char*>{{42}, "hello"}}[0_c].i == 42);
+        EXCEPT_CHECK(fcc::tuple<B>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, const char*>{{42}, "hello"}}[0_c].s == "hello");
     }
     
     struct C {
@@ -77,35 +79,35 @@ int main() {
         C& operator=(const C&) = delete;
     };
     {
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<C>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}}).i == 42);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<C>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}}).d == 42.8);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<C>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, double>{42, 42.8}}).i == 42);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<C>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, double>{42, 42.8}}).d == 42.8);
+        NOEXCEPT_CHECK(fcc::tuple<C>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}}[0_c].i == 42);
+        NOEXCEPT_CHECK(fcc::tuple<C>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}}[0_c].d == 42.8);
+        NOEXCEPT_CHECK(fcc::tuple<C>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, double>{42, 42.8}}[0_c].i == 42);
+        NOEXCEPT_CHECK(fcc::tuple<C>{fcc::piecewise_construct, fcc::allocator_arg, std::allocator<int>{}, fcc::tuple<int, double>{42, 42.8}}[0_c].d == 42.8);
     }
     
     {
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}).i == 42);
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}).d == 42.8);
-        EXCEPT_CHECK(fcc::get<1>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}).i == 43);
-        EXCEPT_CHECK(fcc::get<1>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}).s == "hello");
-        EXCEPT_CHECK(fcc::get<2>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}).i == 44);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}[0_c].i == 42);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}[0_c].d == 42.8);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}[1_c].i == 43);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}[1_c].s == "hello");
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}, fcc::tuple<>{}}[2_c].i == 44);
     }
     
     {
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}).i == 42);
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}).d == 42.8);
-        EXCEPT_CHECK(fcc::get<1>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}).i == 43);
-        EXCEPT_CHECK(fcc::get<1>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}).s == "hello");
-        EXCEPT_CHECK(fcc::get<2>(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}).i == 44);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}[0_c].i == 42);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}[0_c].d == 42.8);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}[1_c].i == 43);
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}[1_c].s == "hello");
+        EXCEPT_CHECK(fcc::tuple<C, B, A>{fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"}}[2_c].i == 44);
     }
     
     // nesting check
     {
-        EXCEPT_CHECK(fcc::get<0>(fcc::get<0>(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})})).i == 42);
-        EXCEPT_CHECK(fcc::get<0>(fcc::get<0>(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})})).d == 42.8);
-        EXCEPT_CHECK(fcc::get<1>(fcc::get<0>(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})})).i == 43);
-        EXCEPT_CHECK(fcc::get<1>(fcc::get<0>(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})})).s == "hello");
-        EXCEPT_CHECK(fcc::get<2>(fcc::get<0>(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})})).i == 44);
+        EXCEPT_CHECK(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})}[0_c][0_c].i == 42);
+        EXCEPT_CHECK(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})}[0_c][0_c].d == 42.8);
+        EXCEPT_CHECK(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})}[0_c][1_c].i == 43);
+        EXCEPT_CHECK(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})}[0_c][1_c].s == "hello");
+        EXCEPT_CHECK(fcc::tuple<fcc::tuple<C, B, A>>{fcc::piecewise_construct, fcc::make_tuple(fcc::piecewise_construct, fcc::tuple<int, double>{42, 42.8}, fcc::tuple<int, const char*>{43, "hello"})}[0_c][2_c].i == 44);
     }
     
     // actually use allocator check

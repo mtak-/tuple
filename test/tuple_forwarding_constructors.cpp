@@ -17,15 +17,17 @@
 #include <string>
 #include <vector>
 
+using namespace fcc::literals;
+
 int main() {
     {
         volatile fcc::tuple<volatile_rref_constructor> x;
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<volatile_rref_constructor>{}).i == 42);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<volatile_rref_constructor>{std::move(x)}).i == 43);
+        NOEXCEPT_CHECK(fcc::tuple<volatile_rref_constructor>{}[0_c].i == 42);
+        NOEXCEPT_CHECK(fcc::tuple<volatile_rref_constructor>{std::move(x)}[0_c].i == 43);
         fcc::tuple<volatile volatile_rref_constructor> z{std::move(x)};
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<volatile volatile_rref_constructor>{std::move(x)}).i == 43);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<volatile_rref_constructor>{fcc::allocator_arg, std::allocator<int>{}, std::move(z)}).i == 43);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<volatile_rref_constructor>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}).i == 43);
+        NOEXCEPT_CHECK(fcc::tuple<volatile volatile_rref_constructor>{std::move(x)}[0_c].i == 43);
+        NOEXCEPT_CHECK(fcc::tuple<volatile_rref_constructor>{fcc::allocator_arg, std::allocator<int>{}, std::move(z)}[0_c].i == 43);
+        NOEXCEPT_CHECK(fcc::tuple<volatile_rref_constructor>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}[0_c].i == 43);
     }
     
     {
@@ -46,24 +48,24 @@ int main() {
     
     {
         fcc::tuple<int, double, float> x{42, 42.5, 42.8f};
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<int, double, float>{x}) == 42);
-        NOEXCEPT_CHECK(fcc::get<1>(fcc::tuple<int, double, float>{x}) == 42.5);
-        NOEXCEPT_CHECK(fcc::get<2>(fcc::tuple<int, double, float>{x}) == 42.8f);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<int, double, float>{std::move(x)}) == 42);
-        NOEXCEPT_CHECK(fcc::get<1>(fcc::tuple<int, double, float>{std::move(x)}) == 42.5);
-        NOEXCEPT_CHECK(fcc::get<2>(fcc::tuple<int, double, float>{std::move(x)}) == 42.8f);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}) == 42);
-        NOEXCEPT_CHECK(fcc::get<1>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}) == 42.5);
-        NOEXCEPT_CHECK(fcc::get<2>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}) == 42.8f);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}) == 42);
-        NOEXCEPT_CHECK(fcc::get<1>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}) == 42.5);
-        NOEXCEPT_CHECK(fcc::get<2>(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}) == 42.8f);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{x}[0_c] == 42);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{x}[1_c] == 42.5);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{x}[2_c] == 42.8f);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{std::move(x)}[0_c] == 42);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{std::move(x)}[1_c] == 42.5);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{std::move(x)}[2_c] == 42.8f);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}[0_c] == 42);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}[1_c] == 42.5);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, x}[2_c] == 42.8f);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}[0_c] == 42);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}[1_c] == 42.5);
+        NOEXCEPT_CHECK(fcc::tuple<int, double, float>{fcc::allocator_arg, std::allocator<int>{}, std::move(x)}[2_c] == 42.8f);
     }
     {
         fcc::tuple<std::string> x{"hi"};
-        CHECK(fcc::get<0>(fcc::tuple<std::string>{x}) == "hi");
+        CHECK(fcc::tuple<std::string>{x}[0_c] == "hi");
         CHECK(!noexcept(fcc::tuple<std::string>{x}));
-        CHECK(fcc::get<0>(fcc::tuple<std::string>{std::move(x)}) == "hi");
+        CHECK(fcc::tuple<std::string>{std::move(x)}[0_c] == "hi");
         CHECK(noexcept(fcc::tuple<std::string>{std::move(x)}));
         
     }

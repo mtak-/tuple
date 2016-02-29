@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+using namespace fcc::literals;
+
 template<typename... Us, typename... Ts>
 static void test_copies(Ts&&... ts)
 {
@@ -49,15 +51,15 @@ int main() {
     
     {
         std::string x{"HI"};
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<std::string&>{{x}}).size() == 2u);
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<const std::string&>{{x}}).size() == 2u);
+        NOEXCEPT_CHECK(fcc::tuple<std::string&>{{x}}[0_c].size() == 2u);
+        NOEXCEPT_CHECK(fcc::tuple<const std::string&>{{x}}[0_c].size() == 2u);
         CHECK(noexcept(fcc::tuple<volatile std::string&>{{x}}));
         CHECK(noexcept(fcc::tuple<const volatile std::string&>{{x}}));
     }
     
-    CHECK(fcc::get<1>(fcc::tuple<std::vector<int>, int&&>{{0, 0, 0, 0}, 9}) == 9);
-    CHECK(fcc::get<0>(fcc::tuple<std::unique_ptr<int>>{{nullptr}}) == nullptr);
-    CHECK(noexcept(fcc::get<0>(fcc::tuple<std::unique_ptr<int>>{{nullptr}})));
+    CHECK(fcc::tuple<std::vector<int>, int&&>{{0, 0, 0, 0}, 9}[1_c] == 9);
+    CHECK(fcc::tuple<std::unique_ptr<int>>{{nullptr}}[0_c] == nullptr);
+    CHECK(noexcept(fcc::tuple<std::unique_ptr<int>>{{nullptr}}[0_c]));
     
     {
         fcc::tuple<empty> y{{}};
@@ -66,14 +68,14 @@ int main() {
     }
     
     {
-        NOEXCEPT_CHECK(fcc::get<0>(fcc::tuple<int>{fcc::allocator_arg, std::allocator<int>{}, {5}}) == 5);
-        EXCEPT_CHECK(fcc::get<0>(fcc::tuple<std::vector<int>>{fcc::allocator_arg, std::allocator<int>{}, {5}}).size() == 1u);
+        NOEXCEPT_CHECK(fcc::tuple<int>{fcc::allocator_arg, std::allocator<int>{}, {5}}[0_c] == 5);
+        EXCEPT_CHECK(fcc::tuple<std::vector<int>>{fcc::allocator_arg, std::allocator<int>{}, {5}}[0_c].size() == 1u);
     }
     
     {
         fcc::tuple<std::vector<int>> x{fcc::allocator_arg, std::allocator<int>{}, {42}};
-        CHECK(fcc::get<0>(x)[0] == 42);
-        CHECK(fcc::get<0>(x).size() == 1u);
+        CHECK(x[0_c][0_c] == 42);
+        CHECK(x[0_c].size() == 1u);
     }
     
     {
