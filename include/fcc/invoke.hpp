@@ -33,7 +33,7 @@ namespace fcc
         template<typename Base, typename T, typename Derived, typename... Args>
             requires std::is_function<T>::value &&
                      std::is_base_of<Base, std::decay_t<Derived>>::value
-        constexpr auto INVOKE(T Base::*pmf, Derived&& ref, Args&&... args)
+        constexpr auto invoke_impl(T Base::*pmf, Derived&& ref, Args&&... args)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             (std::forward<Derived>(ref).*pmf)(std::forward<Args>(args)...)
         )
@@ -41,7 +41,7 @@ namespace fcc
         template<typename Base, typename T, typename RefWrap, typename... Args>
             requires std::is_function<T>::value &&
                      is_reference_wrapper<meta::uncvref<RefWrap>>::value
-        constexpr auto INVOKE(T Base::*pmf, RefWrap&& ref, Args&&... args)
+        constexpr auto invoke_impl(T Base::*pmf, RefWrap&& ref, Args&&... args)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             (ref.get().*pmf)(std::forward<Args>(args)...)
         )
@@ -50,7 +50,7 @@ namespace fcc
             requires std::is_function<T>::value &&
                      !is_reference_wrapper<meta::uncvref<Pointer>>::value &&
                      !std::is_base_of<Base, std::decay_t<Pointer>>::value
-        constexpr auto INVOKE(T Base::*pmf, Pointer&& ptr, Args&&... args)
+        constexpr auto invoke_impl(T Base::*pmf, Pointer&& ptr, Args&&... args)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             ((*std::forward<Pointer>(ptr)).*pmf)(std::forward<Args>(args)...)
         )
@@ -58,7 +58,7 @@ namespace fcc
         template<typename Base, typename T, typename Derived>
             requires !std::is_function<T>::value &&
                      std::is_base_of<Base, std::decay_t<Derived>>::value
-        constexpr auto INVOKE(T Base::*pmd, Derived&& ref)
+        constexpr auto invoke_impl(T Base::*pmd, Derived&& ref)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             std::forward<Derived>(ref).*pmd
         )
@@ -66,7 +66,7 @@ namespace fcc
         template<typename Base, typename T, typename RefWrap>
             requires !std::is_function<T>::value &&
                      is_reference_wrapper<meta::uncvref<RefWrap>>::value
-        constexpr auto INVOKE(T Base::*pmd, RefWrap&& ref)
+        constexpr auto invoke_impl(T Base::*pmd, RefWrap&& ref)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             std::forward<RefWrap>(ref).get().*pmd
         )
@@ -75,14 +75,14 @@ namespace fcc
             requires !std::is_function<T>::value &&
                      !is_reference_wrapper<meta::uncvref<Pointer>>::value &&
                      !std::is_base_of<Base, std::decay_t<Pointer>>::value
-        constexpr auto INVOKE(T Base::*pmd, Pointer&& ptr)
+        constexpr auto invoke_impl(T Base::*pmd, Pointer&& ptr)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             (*std::forward<Pointer>(ptr)).*pmd
         )
         
         template<typename F, typename... Args>
             requires !std::is_member_pointer<std::decay_t<F>>::value
-        constexpr auto INVOKE(F&& f, Args&&... args)
+        constexpr auto invoke_impl(F&& f, Args&&... args)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             std::forward<F>(f)(std::forward<Args>(args)...)
         )
@@ -92,7 +92,7 @@ namespace fcc
         template<typename F, typename... ArgTypes>
         constexpr auto operator()(F&& f, ArgTypes&&... args) const
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-            detail::INVOKE(std::forward<F>(f), std::forward<ArgTypes>(args)...)
+            detail::invoke_impl(std::forward<F>(f), std::forward<ArgTypes>(args)...)
         )
     };
     namespace { constexpr auto&& invoke = static_const<invoke_fn>::value; }
