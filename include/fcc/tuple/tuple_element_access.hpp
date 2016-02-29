@@ -25,39 +25,35 @@ namespace fcc {
     //////////////
     namespace detail {
         // was getting ICE's (I'm a concept noob) and this particular way works
-        // (actually is doesn't, had to allow remove the noexcept check for get<I>(tup),
+        // (actually it doesn't, had to allow remove the noexcept check for get<I>(tup),
         // all the noexcept traits below depend on get<I>(tup) being noexcept, so obviously
         // this is not desirable)
-        template<typename T, typename ISeq, typename = void>
-        struct is_tuple_like_ : std::false_type {};
+        template<typename T, std::size_t I>
+        concept bool TupleLikeI = requires(T t) {
+            {std::is_same<decltype(get<I>(std::forward<T>(t))), get_type<I, T>>{}} -> std::true_type;
+//            {meta::bool_<noexcept(get<I>(std::forward<T>(t)))>{}} -> std::true_type;
+        };
         
         template<typename T, std::size_t... Is>
-        struct is_tuple_like_<T, meta::iseq<Is...>,
-            std::enable_if_t<
-                meta::and_c<
-                    std::is_same<
-                        decltype(get<Is>(std::declval<T>())),
-                        get_type<Is, T>>::value.../*,
-                    noexcept(get<Is>(std::declval<T>()))...*/>::value>> // ICE blocks this
-            : std::true_type
-        {};
+        concept bool TupleLikeImpl = (TupleLikeI<T, Is> && ...);
         
-        template<typename T, typename = void>
-        struct is_tuple_sizeable : std::false_type {};
+        template<typename T, typename ISeq>
+        struct is_tuple_like_ : std::false_type {};
+        
+        template<typename T, std::size_t... Is> requires TupleLikeImpl<T, Is...>
+        struct is_tuple_like_<T, meta::iseq<Is...>> : std::true_type {};
         
         template<typename T>
-        struct is_tuple_sizeable<T,
-            std::enable_if_t<
-                std::is_same<
-                    meta::uncvref<decltype(tuple_size<meta::uncvref<T>>::value)>,
-                    std::size_t>::value>>
-            : std::true_type {};
+        concept bool TupleSizeable = requires {
+            {std::is_same<meta::uncvref<decltype(tuple_size<meta::uncvref<T>>::value)>,
+                          std::size_t>{}} -> std::true_type;
+        };
     }
     
     template<typename T>
     struct is_tuple_like : std::false_type {};
     
-    template<typename T> requires detail::is_tuple_sizeable<T>::value
+    template<detail::TupleSizeable T>
     struct is_tuple_like<T> : detail::is_tuple_like_<T, tuple_indices<T>>::type {};
     
     template<typename T>
@@ -83,12 +79,8 @@ namespace fcc {
         template<typename Tup, template<std::size_t, typename> class Transform>
         using tuple_as_list = meta::_t<tuple_as_list_<Tup, Transform, tuple_indices<Tup>>>;
         
-        template<std::size_t I, typename Tup>
-        using tuple_element_remove_ref = tuple_element_t<I, std::remove_reference_t<Tup>>;
-        
         template<TupleLike Tup>
-        using tuple_elem_as_list = meta::_t<tuple_as_list_<Tup, tuple_element_remove_ref,
-                                                           tuple_indices<Tup>>>;
+        using tuple_elem_as_list = meta::_t<tuple_as_list_<Tup, elem, tuple_indices<Tup>>>;
         
         template<TupleLike Tup>
         using tuple_get_type_as_list = meta::_t<tuple_as_list_<Tup, get_type, tuple_indices<Tup>>>;

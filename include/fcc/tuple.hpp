@@ -247,49 +247,49 @@ namespace fcc {
             requires TupleTupleAssignable<tuple&, UTuple>
         constexpr tuple& operator=(UTuple&& rhs) &
             noexcept(is_nothrow_tuple_tuple_assignable<tuple&, UTuple>::value)
-        { return assign(*this, std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(*this, std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<tuple&&, UTuple>
         constexpr tuple&& operator=(UTuple&& rhs) &&
             noexcept(is_nothrow_tuple_tuple_assignable<tuple&&, UTuple>::value)
-        { return assign(std::move(*this), std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(std::move(*this), std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<const tuple&, UTuple>
         constexpr const tuple& operator=(UTuple&& rhs) const&
             noexcept(is_nothrow_tuple_tuple_assignable<const tuple&, UTuple>::value)
-        { return assign(*this, std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(*this, std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<const tuple&&, UTuple>
         constexpr const tuple&& operator=(UTuple&& rhs) const&&
             noexcept(is_nothrow_tuple_tuple_assignable<const tuple&&, UTuple>::value)
-        { return assign(std::move(*this), std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(std::move(*this), std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<volatile tuple&, UTuple>
         constexpr volatile tuple& operator=(UTuple&& rhs) volatile&
             noexcept(is_nothrow_tuple_tuple_assignable<volatile tuple&, UTuple>::value)
-        { return assign(*this, std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(*this, std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<volatile tuple&&, UTuple>
         constexpr volatile tuple&& operator=(UTuple&& rhs) volatile&&
             noexcept(is_nothrow_tuple_tuple_assignable<volatile tuple&&, UTuple>::value)
-        { return assign(std::move(*this), std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(std::move(*this), std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<const volatile tuple&, UTuple>
         constexpr const volatile tuple& operator=(UTuple&& rhs) const volatile&
             noexcept(is_nothrow_tuple_tuple_assignable<const volatile tuple&, UTuple>::value)
-        { return assign(*this, std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(*this, std::forward<UTuple>(rhs)); }
         
         template<TupleLike UTuple>
             requires TupleTupleAssignable<const volatile tuple&&, UTuple>
         constexpr const volatile tuple&& operator=(UTuple&& rhs) const volatile&&
             noexcept(is_nothrow_tuple_tuple_assignable<const volatile tuple&&, UTuple>::value)
-        { return assign(std::move(*this), std::forward<UTuple>(rhs)); }
+        { return ::fcc::assign(std::move(*this), std::forward<UTuple>(rhs)); }
         
         /////////////////////////////////
         // DELETED ASSIGNMENT OPERATORS
@@ -456,8 +456,7 @@ namespace fcc {
             template<std::size_t I, FccTuple Tup>
             constexpr get_type<I, Tup> operator()(Tup&& tup) const noexcept
             {
-                using elem_type = tuple_element_t<I, std::remove_reference_t<Tup>>;
-                using leaf_type = detail::tuple_leaf<I, elem_type>;
+                using leaf_type = detail::tuple_leaf<I, elem<I, Tup>>;
                 return static_cast<get_type<I, Tup>>(
                     static_cast<meta::as_same_cvref<leaf_type, Tup>>(std::forward<Tup>(tup)).get());
             }

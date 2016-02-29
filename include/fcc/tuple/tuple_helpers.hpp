@@ -87,12 +87,18 @@ namespace fcc {
     
     template<std::size_t I, typename T>
     using tuple_element_t = meta::_t<tuple_element<I, T>>;
+
+    /////////
+    // ELEM
+    /////////
+    template<std::size_t I, typename Tup>
+    using elem = tuple_element_t<I, std::remove_reference_t<Tup>>;
     
     /////////////
     // GET_TYPE
     /////////////
     template<std::size_t I, typename T>
-    using get_type = meta::as_same_cvref<tuple_element_t<I, std::remove_reference_t<T>>, T>;
+    using get_type = meta::as_same_cvref<elem<I, T>, T>;
 }
 
 #endif

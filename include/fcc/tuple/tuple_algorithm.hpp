@@ -97,8 +97,7 @@ namespace fcc {
         template<TupleLike Tup, std::size_t I, std::size_t... Is>
         static constexpr auto impl(Tup&& tup, meta::iseq<I, Is...>)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-            tuple<tuple_element_t<Is, std::remove_reference_t<Tup>>...>
-                (get<Is>(std::forward<Tup>(tup))...)
+            tuple<elem<Is, Tup>...>(get<Is>(std::forward<Tup>(tup))...)
         )
     
     public:
@@ -329,8 +328,7 @@ namespace fcc {
         template<std::size_t I, typename... Tups>
         static constexpr auto join_elems(Tups&&... tups)
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-            tuple<tuple_element_t<I, std::remove_reference_t<Tups>>...>
-                (get<I>(std::forward<Tups>(tups))...)
+            tuple<elem<I, Tups>...>(get<I>(std::forward<Tups>(tups))...)
         )
         
         template<typename... Tups, std::size_t... Is, std::size_t N = sizeof...(Is)>
@@ -366,7 +364,7 @@ namespace fcc {
         template<typename T, TupleLike Tup>
         constexpr auto operator()(T&& t, Tup&& tup) const
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-            tuple_cat(tuple<tuple_element_t<0, std::remove_reference_t<Tup>>>(head(std::forward<Tup>(tup))),
+            tuple_cat(tuple<elem<0, Tup>>(head(std::forward<Tup>(tup))),
                       join(zip(replicate<safe_size_minus_1<Tup>::value>(std::forward<T>(t)),
                                tail(std::forward<Tup>(tup)))))
         )
