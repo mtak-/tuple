@@ -100,7 +100,7 @@ static void get_tests_cv() {
     get_tests_ref<const volatile T>();
 }
 
-void get_tests() {
+static void get_tests() {
     get_tests_cv<int>();
     get_tests_cv<std::string>();
 }

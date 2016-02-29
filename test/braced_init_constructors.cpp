@@ -18,7 +18,7 @@
 #include <vector>
 
 template<typename... Us, typename... Ts>
-void test_copies(Ts&&... ts)
+static void test_copies(Ts&&... ts)
 {
     auto lhs = fcc::tuple<Us...>{{std::forward<Ts>(ts)}...};
     CHECK(lhs == fcc::tuple<Us...>{std::forward<Ts>(ts)...});
