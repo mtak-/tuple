@@ -1,6 +1,6 @@
 # About
 
-This repository contains an implementation of `<tuple>`, using concepts, that attempts to fix bugs in the current standard, provide additional features to catch more bugs at compile time and make `tuple` feel more complete. Additionally, care was taken to avoid recursive templates resulting in improved compile times.
+This repository contains an implementation of `<tuple>`, using concepts (mostly implemented in the oldschool SFINAE style), that attempts to fix bugs in the current standard, provide additional features to catch more bugs at compile time and make `tuple` feel more complete. Additionally, care was taken to avoid recursive templates resulting in improved compile times.
 
 *Note: Unless specified otherwise, declarations live in the namespace `fcc` (e.g. if you see `tuple_size<T>` assume the README is referring to `::fcc::tuple_size<T>`).*
 
