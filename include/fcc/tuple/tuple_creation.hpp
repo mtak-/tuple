@@ -115,10 +115,10 @@ namespace fcc
     //////////////
     struct tuple_cat_fn {
     private:
-        // Note: as of Jan 22, 2016
-        // an ICE prevents tuple_cat from working with rvalue references to temporaries
-        // iff it is declared constexpr (comment out constexpr to workaround this)
-        // repro: fcc::tuple_cat(fcc::tuple<int&&>{8});
+        // Note: at the latest, as of Feb 28, 2016, ICE affecting literal rvalue refs passed in
+        // here no longer happens!!!
+        // old repro: auto z = fcc::tuple_cat(fcc::tuple<int&&>{8});
+        //            cout << (get<0>(z)) << endl;
         template<typename ResultTuple, std::size_t... Outers, std::size_t... Inners,
                  typename TupOfTups>
         static constexpr ResultTuple
