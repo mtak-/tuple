@@ -274,7 +274,7 @@ This constructor accepts move-only types, handles `tuple`'s of references, *and*
 
 ## Perfect Forwarding Assignment
 
-**Problem:** Consider the following code in which the value of the literal `5` is apparently changed:
+**Problem:** Consider the following code in which the value of the literal `5` is apparently changed ([wandbox](http://melpon.org/wandbox/permlink/8CrRMJ0BmaEXv3Nw)):
 
 ```cpp
 std::forward_as_tuple(5) = std::make_tuple(8);
