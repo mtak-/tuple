@@ -16,10 +16,80 @@
 
 using namespace fcc;
 
+template<typename T>
+static void index_operator_test()
+{
+    static_assert(
+        std::is_same<
+            T&,
+            decltype(std::declval<tuple<T>&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<tuple<T>&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            T&&,
+            decltype(std::declval<tuple<T>&&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<tuple<T>&&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            const T&,
+            decltype(std::declval<const tuple<T>&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<const tuple<T>&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            const T&&,
+            decltype(std::declval<const tuple<T>&&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<const tuple<T>&&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            volatile T&,
+            decltype(std::declval<volatile tuple<T>&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<volatile tuple<T>&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            volatile T&&,
+            decltype(std::declval<volatile tuple<T>&&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<volatile tuple<T>&&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            const volatile T&,
+            decltype(std::declval<const volatile tuple<T>&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<const volatile tuple<T>&>()[0_c]));
+    
+    static_assert(
+        std::is_same<
+            const volatile T&&,
+            decltype(std::declval<const volatile tuple<T>&&>()[0_c])
+        >::value);
+    
+    static_assert(noexcept(std::declval<const volatile tuple<T>&&>()[0_c]));
+}
+
 // static_assert get_type is the same as the type std::get returns
 template<typename T>
 static void get_tests_impl()
 {
+    index_operator_test<T>();
+    
     static_assert(
         std::is_same<
             T&,
