@@ -54,7 +54,7 @@ namespace fcc {
     struct is_tuple_like : std::false_type {};
     
     template<detail::TupleSizeable T>
-    struct is_tuple_like<T> : detail::is_tuple_like_<T, tuple_indices<T>>::type {};
+    struct is_tuple_like<T> : detail::is_tuple_like_<T, indices<T>>::type {};
     
     template<typename T>
     concept bool TupleLike = is_tuple_like<T>::value;
@@ -77,13 +77,13 @@ namespace fcc {
             : meta::id<meta::list<Transform<Is, Tup>...>> {};
         
         template<typename Tup, template<std::size_t, typename> class Transform>
-        using tuple_as_list = meta::_t<tuple_as_list_<Tup, Transform, tuple_indices<Tup>>>;
+        using tuple_as_list = meta::_t<tuple_as_list_<Tup, Transform, indices<Tup>>>;
         
         template<TupleLike Tup>
-        using tuple_elem_as_list = meta::_t<tuple_as_list_<Tup, elem, tuple_indices<Tup>>>;
+        using tuple_elem_as_list = meta::_t<tuple_as_list_<Tup, elem, indices<Tup>>>;
         
         template<TupleLike Tup>
-        using tuple_get_type_as_list = meta::_t<tuple_as_list_<Tup, get_type, tuple_indices<Tup>>>;
+        using tuple_get_type_as_list = meta::_t<tuple_as_list_<Tup, get_type, indices<Tup>>>;
         
         struct apply_tuple
         {
@@ -91,7 +91,7 @@ namespace fcc {
             using apply = tuple<Ts...>;
         };
         
-        template<typename T, TupleLike Tup, typename = tuple_indices<Tup>>
+        template<typename T, TupleLike Tup, typename = indices<Tup>>
         struct unique_in_tuple;
         
         template<typename T, TupleLike Tup, std::size_t... Is>

@@ -61,7 +61,7 @@ namespace fcc {
     
     template<Istream Istr, TupleLike Tup>
     struct is_tuple_istreamable<Istr, Tup>
-        : detail::is_tuple_istreamable_<Istr, Tup, tuple_indices<Tup>> {};
+        : detail::is_tuple_istreamable_<Istr, Tup, indices<Tup>> {};
     
     template<typename Istr, typename Tup>
     concept bool TupleIstreamable = is_tuple_istreamable<Istr, Tup>::value;
@@ -81,8 +81,7 @@ namespace fcc {
         template<typename Istr, typename Tup> requires fcc::TupleIstreamable<Istr, Tup>
         constexpr fcc::detail::istream_result<Istr, Tup> operator>>(Istr&& istr, Tup&& tup)
         FCC_RETURN_NOEXCEPT(
-            fcc::detail::stream_in(std::forward<Istr>(istr), std::forward<Tup>(tup),
-                                   fcc::tuple_indices<Tup>{})
+            detail::stream_in(std::forward<Istr>(istr), std::forward<Tup>(tup), indices<Tup>{})
         )
     }
     
@@ -105,7 +104,7 @@ namespace fcc {
     
     template<Ostream Ostr, TupleLike Tup>
     struct is_tuple_ostreamable<Ostr, Tup>
-        : detail::is_tuple_ostreamable_<Ostr, Tup, tuple_indices<Tup>> {};
+        : detail::is_tuple_ostreamable_<Ostr, Tup, indices<Tup>> {};
     
     template<typename Ostr, typename Tup>
     concept bool TupleOstreamable = is_tuple_ostreamable<Ostr, Tup>::value;
@@ -125,8 +124,7 @@ namespace fcc {
         template<typename Ostr, typename Tup> requires fcc::TupleOstreamable<Ostr, Tup>
         constexpr fcc::detail::ostream_result<Ostr, Tup> operator<<(Ostr&& ostr, Tup&& tup)
         FCC_RETURN_NOEXCEPT(
-            fcc::detail::stream_out(std::forward<Ostr>(ostr), std::forward<Tup>(tup),
-                                    fcc::tuple_indices<Tup>{})
+            detail::stream_out(std::forward<Ostr>(ostr), std::forward<Tup>(tup), indices<Tup>{})
         )
     }
 }

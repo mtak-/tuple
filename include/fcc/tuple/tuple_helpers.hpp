@@ -52,11 +52,11 @@ namespace fcc {
     template<typename Tup>
     using size = tuple_size<std::remove_reference_t<Tup>>;
     
-    //////////////////
-    // TUPLE_INDICES
-    //////////////////
+    ////////////
+    // INDICES
+    ////////////
     template<typename Tup>
-    using tuple_indices = meta::make_iseq<size<Tup>::value>;
+    using indices = meta::make_iseq<size<Tup>::value>;
     
     //////////////////
     // TUPLE_ELEMENT

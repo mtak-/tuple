@@ -104,7 +104,7 @@ static void verify_via_static_assert()
 {
 // std::tuple fails these tests
 #if USE_STD_TUPLE == 0
-    verify_via_static_assert_impl<type_trait, Lhs, Rhs>(fcc::tuple_indices<Lhs>{});
+    verify_via_static_assert_impl<type_trait, Lhs, Rhs>(fcc::indices<Lhs>{});
 #endif
 }
 

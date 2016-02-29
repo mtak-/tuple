@@ -71,8 +71,7 @@ namespace fcc { namespace detail {
         constexpr tuple_base(piecewise_construct_t, meta::iseq<Js...>, meta::iseq<Ds...>,
                              UTuples&&... utuples)
             noexcept(is_nothrow_piecewise_tuple_constructible<derived, UTuples...>::value)
-            : base<Js>(piecewise_construct, tuple_indices<UTuples>{},
-                       std::forward<UTuples>(utuples))...
+            : base<Js>(piecewise_construct, indices<UTuples>{}, std::forward<UTuples>(utuples))...
             , base<Ds>()...
         {}
         
@@ -81,7 +80,7 @@ namespace fcc { namespace detail {
                              meta::iseq<Js...>, meta::iseq<Ds...>, UTuples&&... utuples)
             noexcept(is_nothrow_piecewise_tuple_alloc_constructible<derived, const Alloc&,
                                                                     UTuples...>::value)
-            : base<Js>(piecewise_construct, allocator_arg, alloc, tuple_indices<UTuples>{},
+            : base<Js>(piecewise_construct, allocator_arg, alloc, indices<UTuples>{},
                        std::forward<UTuples>(utuples))...
             , base<Ds>(allocator_arg, alloc)...
         {}

@@ -158,7 +158,7 @@ namespace fcc {
     
     namespace detail {
         // tuple constructible template. used for construction from TupleLike types
-        template<typename ConTrait, TupleLike Tup0, TupleLike Tup1, typename = tuple_indices<Tup0>>
+        template<typename ConTrait, TupleLike Tup0, TupleLike Tup1, typename = indices<Tup0>>
         struct tuple_constructible_template_sized : std::false_type {};
 
         template<typename ConTrait, TupleLike Tup0, TupleLike Tup1, std::size_t... Is>
@@ -243,8 +243,7 @@ namespace fcc {
     
     namespace detail {
         // piecewise constructible template. used for all piecewise_construct_t concepts/traits
-        template<typename ConTrait, typename T, TupleLike UTuple,
-                 typename ISeq = tuple_indices<UTuple>>
+        template<typename ConTrait, typename T, TupleLike UTuple, typename ISeq = indices<UTuple>>
         struct constructible_from_tuple_gets;
         
         template<typename ConTrait, typename T, TupleLike UTuple, std::size_t... Is>
@@ -355,8 +354,7 @@ namespace fcc {
     namespace detail {
         // binary get_type based template. used for all templates that depend on the
         // get_type<Is, Tuple> of both arguments
-        template<typename GetBasedTrait, TupleLike Tup0, TupleLike Tup1,
-                 typename = tuple_indices<Tup0>>
+        template<typename GetBasedTrait, TupleLike Tup0, TupleLike Tup1, typename = indices<Tup0>>
         struct tuple_get_based_trait_template_impl;
 
         template<typename GetBasedTrait, TupleLike Tup0, TupleLike Tup1, std::size_t... Is>

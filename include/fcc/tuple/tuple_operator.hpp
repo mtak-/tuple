@@ -69,8 +69,8 @@ namespace fcc {
         constexpr bool operator==(Tup0&& tup0, Tup1&& tup1)
             noexcept(fcc::is_nothrow_tuple_tuple_equality_comparable<Tup0, Tup1>::value)
         {
-            return fcc::detail::equal_impl(std::forward<Tup0>(tup0), std::forward<Tup1>(tup1),
-                                           fcc::tuple_indices<Tup0>{});
+            return detail::equal_impl(std::forward<Tup0>(tup0), std::forward<Tup1>(tup1),
+                                      indices<Tup0>{});
         }
 
         ///////////////
@@ -107,8 +107,8 @@ namespace fcc {
         constexpr bool operator<(Tup0&& tup0, Tup1&& tup1)
             noexcept(fcc::is_nothrow_tuple_tuple_less_than_comparable<Tup0, Tup1>::value)
         {
-            return fcc::detail::less_impl(std::forward<Tup0>(tup0), std::forward<Tup1>(tup1),
-                                          fcc::tuple_indices<Tup0>{});
+            return detail::less_impl(std::forward<Tup0>(tup0), std::forward<Tup1>(tup1),
+                                     indices<Tup0>{});
         }
 
         //////////////

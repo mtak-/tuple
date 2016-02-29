@@ -44,7 +44,7 @@ namespace fcc {
             requires TupleTupleAssignable<Tup0&&, Tup1&&>
         constexpr Tup0&& operator()(Tup0&& lhs, Tup1&& rhs) const
             noexcept(is_nothrow_tuple_tuple_assignable<Tup0&&, Tup1&&>::value)
-        { return impl(std::forward<Tup0>(lhs), std::forward<Tup1>(rhs), tuple_indices<Tup0>{}); }
+        { return impl(std::forward<Tup0>(lhs), std::forward<Tup1>(rhs), indices<Tup0>{}); }
     };
     namespace { constexpr auto&& assign = static_const<assign_fn>::value; }
     
@@ -80,7 +80,7 @@ namespace fcc {
             requires TupleTupleSwappable<T&&, U&&>
         constexpr void operator()(T&& t, U&& u) const
             noexcept(is_nothrow_tuple_tuple_swappable<T, U>::value)
-        { impl(std::forward<T>(t), std::forward<U>(u), tuple_indices<T>{}); }
+        { impl(std::forward<T>(t), std::forward<U>(u), indices<T>{}); }
     };
     namespace { constexpr auto&& swap = static_const<swap_fn>::value; }
     
@@ -105,14 +105,14 @@ namespace fcc {
             requires !NullTuple<Tup>
         constexpr auto operator()(Tup&& tup) const
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-            impl(std::forward<Tup>(tup), tuple_indices<Tup>{})
+            impl(std::forward<Tup>(tup), indices<Tup>{})
         )
     };
     namespace { constexpr auto&& tail = static_const<tail_fn>::value; }
     
     // TODO: simplify traits after this point
     namespace detail {
-        template<typename F, typename Tup, typename ISeq = tuple_indices<Tup>>
+        template<typename F, typename Tup, typename ISeq = indices<Tup>>
         struct is_tuple_applyable_;
         
         template<typename F, typename Tup, std::size_t... Is>
@@ -130,7 +130,7 @@ namespace fcc {
     concept bool TupleApplyable() { return is_tuple_applyable<F, Tup>::value; }
     
     namespace detail {
-        template<typename F, typename Tup, typename ISeq = tuple_indices<Tup>>
+        template<typename F, typename Tup, typename ISeq = indices<Tup>>
         struct is_nothrow_tuple_applyable_impl;
         
         template<typename F, typename Tup, std::size_t... Is>
@@ -162,7 +162,7 @@ namespace fcc {
             requires TupleApplyable<F&&, Tup&&>()
         constexpr decltype(auto) operator()(F&& f, Tup&& tup) const
             noexcept(is_nothrow_tuple_applyable<F&&, Tup&&>::value)
-        { return impl(std::forward<F>(f), std::forward<Tup>(tup), tuple_indices<Tup>{}); }
+        { return impl(std::forward<F>(f), std::forward<Tup>(tup), indices<Tup>{}); }
     };
     namespace { constexpr auto&& apply = static_const<apply_fn>::value; }
     
@@ -204,7 +204,7 @@ namespace fcc {
     }
     
     namespace detail {
-        template<typename F, typename Tup, typename ISeq = tuple_indices<Tup>>
+        template<typename F, typename Tup, typename ISeq = indices<Tup>>
         struct is_tuple_for_each_elemable_;
         
         template<typename F, typename Tup, std::size_t... Is>
@@ -230,7 +230,7 @@ namespace fcc {
     { return is_tuple_for_each_elemable<F, Tup>::value; }
         
     namespace detail {
-        template<typename F, typename Tup, typename ISeq = tuple_indices<Tup>>
+        template<typename F, typename Tup, typename ISeq = indices<Tup>>
         struct is_nothrow_tuple_for_each_elemable_;
         
         template<typename F, typename Tup, std::size_t... Is>
@@ -263,7 +263,7 @@ namespace fcc {
             requires TupleForEachElemable<F&&, Tup&&>()
         constexpr void operator()(F&& f, Tup&& tup) const
             noexcept(is_nothrow_tuple_for_each_elemable<F&&, Tup&&>::value)
-        { return impl(std::forward<F>(f), std::forward<Tup>(tup), tuple_indices<Tup>{}); }
+        { return impl(std::forward<F>(f), std::forward<Tup>(tup), indices<Tup>{}); }
     };
     namespace { constexpr auto&& for_each_elem = static_const<for_each_elem_fn>::value; }
     
@@ -275,7 +275,7 @@ namespace fcc {
         struct iseq_from_first_<> : meta::id<meta::iseq<>> {};
         
         template<typename Tup0, typename... Tups>
-        struct iseq_from_first_<Tup0, Tups...> : meta::id<tuple_indices<Tup0>> {};
+        struct iseq_from_first_<Tup0, Tups...> : meta::id<indices<Tup0>> {};
         
         template<typename... Tups>
         using iseq_from_first = meta::_t<iseq_from_first_<Tups...>>;
@@ -411,7 +411,7 @@ namespace fcc {
         constexpr auto operator()(F&& f, Init&& init, Tup&& tup) const
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             impl(std::forward<F>(f), std::forward<Init>(init), std::forward<Tup>(tup),
-                 tuple_indices<Tup>{})
+                 indices<Tup>{})
         )
     };
     namespace { constexpr auto foldl = static_const<foldl_fn>::value; }
@@ -451,7 +451,7 @@ namespace fcc {
         constexpr auto operator()(F&& f, Init&& init, Tup&& tup) const
         FCC_DECLTYPE_AUTO_RETURN_NOEXCEPT(
             impl(std::forward<F>(f), std::forward<Init>(init), std::forward<Tup>(tup),
-                 tuple_indices<Tup>{})
+                 indices<Tup>{})
         )
     };
     namespace { constexpr auto foldr = static_const<foldr_fn>::value; }
