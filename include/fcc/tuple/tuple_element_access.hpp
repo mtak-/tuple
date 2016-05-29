@@ -25,7 +25,7 @@ namespace fcc {
     //////////////
     namespace detail {
         // was getting ICE's (I'm a concept noob) and this particular way works
-        // (actually it doesn't, had to allow remove the noexcept check for get<I>(tup),
+        // (actually it doesn't, had to remove the noexcept check for get<I>(tup),
         // all the noexcept traits below depend on get<I>(tup) being noexcept, so obviously
         // this is not desirable)
         template<typename T, std::size_t I>

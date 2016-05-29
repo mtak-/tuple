@@ -203,7 +203,7 @@ To understand why an lvalue ref winds up bound to a prvalue, start with the rema
 The relevant part of the remarks clause [`§20.4.2.1.17`](http://eel.is/c++draft/tuple.cnstr#17) is as follows:
 > This constructor shall not participate in overload resolution unless `std::is_constructible<Ti, const Ui&>::value` is `true` for all `i`.
 
-`std::is_constructible<int&, std::add_rvalue_reference_t<std::add_const_t<int&>>>::value` is `true`, and the requires clause simply verifies that the two tuples have the same size. This constructor is selected, and what should be invalid code compiles. *Note: libc++ does the right thing here*
+`std::is_constructible<int&, std::add_lvalue_reference_t<std::add_const_t<int&>>>::value` is `true`, and the requires clause simply verifies that the two tuples have the same size. This constructor is selected, and what should be invalid code compiles. *Note: libc++ does the right thing here*
 
 **Solution:** `fcc::tuple` resolves this by having a single perfectly forwarded constructor (actually two to maintain *perfect initialization*) for `TupleLike` types.
 
