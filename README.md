@@ -215,24 +215,36 @@ The constructor participates in overload resolution if, and only if:
 
 **Alternate Solution:** `fcc::tuple` could have resolved this with minimal changes to the current standard by only *adding* constructors as follows:
 ```cpp
+// existing
 tuple(const tuple<Us...>& rhs); // 0
 tuple(tuple<Us...>&& rhs);      // 1
 tuple(const pair<U0, U1>& rhs); // 2
 tuple(pair<U0, U1>&& rhs);      // 3
 
 // new
-tuple(tuple<Us...>&& rhs) = delete; // 4
-tuple(pair<U0, U1>&& rhs) = delete; // 5
-tuple(const tuple<Us...>&& rhs) = delete; // 6
-tuple(const pair<U0, U1>&& rhs) = delete; // 7
+tuple(tuple<Us...>& rhs);                 // 4
+tuple(tuple<Us...>&& rhs) = delete;       // 5
+tuple(pair<U0, U1>&& rhs) = delete;       // 6
+tuple(const tuple<Us...>&& rhs);          // 7
+tuple(const pair<U0, U1>&& rhs);          // 8
+tuple(const tuple<Us...>&& rhs) = delete; // 9
+tuple(const pair<U0, U1>&& rhs) = delete; // 10
 ```
 
-Constructor 4 and constructor 5 have an opposite condition in the remarks clause from [`§20.4.2.1.20`](http://eel.is/c++draft/tuple.cnstr#20):
+Constructor 4 is required to handle the following case:
+```cpp
+tuple<int> x{42};
+tuple<int&> y{x};
+```
+
+Constructor 5 and constructor 6 have an opposite condition in the remarks clause from [`§20.4.2.1.20`](http://eel.is/c++draft/tuple.cnstr#20):
 > This constructor shall not participate in overload resolution unless `std::is_constructible<Ti, Ui&&>::value` is **`false`** for **any** `i`
+
+Constructors 7, 8, 9, and 10, have equivalent rules for `const` qualified rvalue reference to `tuple`s, as 1, 3, 5, and 6.
 
 This would be sufficient to stop compilation before an rvalue reference to `tuple` has a chance to bind to a `const tuple&`.
 
-*Note: In this example, constructors 6 and 7 always participate in overload resolution, though something smarter could be done. In many scenarios constructing a `tuple` from a `const tuple&&` should be valid (think construction of `tuple<int>` from `const tuple<int>&&`). However, if that's the path the standard wants to take, the solution used by `fcc::tuple` is a lot easier to write, and more complete as it handles [`volatile tuple`](#volatile-tuples-are-tuplelike)'s. Even if the standard didn't want to handle `volatile tuple`'s, perfect forwarding with a 'participates in overload resolution' clause that forbids `volatile` types would be simpler.*
+*Note: Even more overloads are required to properly handle non-const references to lvalue tuples. Perfect forwarding greatly reduces the number of constructors.*
 
 ## Braced-Init Constructors
 
