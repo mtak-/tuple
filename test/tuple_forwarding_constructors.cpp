@@ -67,7 +67,88 @@ int main() {
         CHECK(!noexcept(fcc::tuple<std::string>{x}));
         CHECK(fcc::tuple<std::string>{std::move(x)}[0_c] == "hi");
         CHECK(noexcept(fcc::tuple<std::string>{std::move(x)}));
-        
+    }
+    
+    // CHECK basic copy/move/ref cases
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<int> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const int> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<volatile int> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const volatile int> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<int> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const int> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<volatile int> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const volatile int> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<int&> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const int&> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<volatile int&> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const volatile int&> y{x};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<int&&> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const int&&> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<volatile int&&> y{std::move(x)};
+        CHECK(y[0_c] == 42);
+    }
+    {
+        fcc::tuple<int> x{42};
+        fcc::tuple<const volatile int&&> y{std::move(x)};
+        CHECK(y[0_c] == 42);
     }
     return test_result();
 }
