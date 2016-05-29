@@ -183,10 +183,12 @@ tuple(tuple&& rhs)      requires false = delete;
 The current `TupleLike` copy/move constructors in the standard:
 
 ```cpp
-tuple(const tuple<Us...>& rhs); // 0
-tuple(tuple<Us...>&& rhs);      // 1
-tuple(const pair<U0, U1>& rhs); // 2
-tuple(pair<U0, U1>&& rhs);      // 3
+tuple(const tuple&) = default;  // 0
+tuple(tuple&&) = default;       // 1
+tuple(const tuple<Us...>& rhs); // 2
+tuple(tuple<Us...>&& rhs);      // 3
+tuple(const pair<U0, U1>& rhs); // 4
+tuple(pair<U0, U1>&& rhs);      // 5
 ```
 
 Consider the following code in which an `int&` gets bound to a prvalue:
@@ -195,15 +197,28 @@ Consider the following code in which an `int&` gets bound to a prvalue:
 std::tuple<int&> x{std::forward_as_tuple(9)}; // lvalue ref bound to literal
 ```
 
-To understand why an lvalue ref winds up bound to a prvalue, start with the remarks clause [§20.4.2.1.20](http://eel.is/c++draft/tuple.cnstr#20) about the move constructor with comment `// 1`, which according the standard:
+To understand why an lvalue ref winds up bound to a prvalue, start with the remarks clause [§20.4.2.1.20](http://eel.is/c++draft/tuple.cnstr#20) about the move constructor with comment `// 3`, which according the standard:
 > This constructor shall not participate in overload resolution unless `std::is_constructible<Ti, Ui&&>::value` is `true` for all `i`
 
-`std::is_constructible<int&, int&&>::value` is `false` so the constructor does not participate in overload resolution, but `// 0` is still a candidate because `tuple<Us...>&&` binds to `const tuple<Us...>&`.
+`std::is_constructible<int&, int&&>::value` is `false` so the constructor does not participate in overload resolution, but `// 2` is still a candidate because `tuple<Us...>&&` binds to `const tuple<Us...>&`.
 
 The relevant part of the remarks clause [`§20.4.2.1.17`](http://eel.is/c++draft/tuple.cnstr#17) is as follows:
 > This constructor shall not participate in overload resolution unless `std::is_constructible<Ti, const Ui&>::value` is `true` for all `i`.
 
 `std::is_constructible<int&, std::add_lvalue_reference_t<std::add_const_t<int&>>>::value` is `true`, and the requires clause simply verifies that the two tuples have the same size. This constructor is selected, and what should be invalid code compiles. *Note: libc++ does the right thing here*
+
+Consider the following reasonable code which is forbidden by the standard:
+```cpp
+int x = 42;
+std::tuple<int> y{x};
+std::tuple<int&> z{y}; // oops does not compile, no constructor handling non-const lvalue refs
+```
+
+The standard is missing constructors to handle non-const similar tuple types.
+```cpp
+tuple(tuple<Us...>& rhs);
+tuple(pair<U0, U1>& rhs);
+```
 
 **Solution:** `fcc::tuple` resolves this by having a single perfectly forwarded constructor (actually two to maintain *perfect initialization*) for `TupleLike` types.
 
@@ -216,35 +231,38 @@ The constructor participates in overload resolution if, and only if:
 **Alternate Solution:** `fcc::tuple` could have resolved this with minimal changes to the current standard by only *adding* constructors as follows:
 ```cpp
 // existing
-tuple(const tuple<Us...>& rhs); // 0
-tuple(tuple<Us...>&& rhs);      // 1
-tuple(const pair<U0, U1>& rhs); // 2
-tuple(pair<U0, U1>&& rhs);      // 3
+tuple(const tuple& rhs) = default; // 0
+tuple(tuple&& rhs) = default;      // 1
+tuple(const tuple<Us...>& rhs);    // 2
+tuple(tuple<Us...>&& rhs);         // 3
+tuple(const pair<U0, U1>& rhs);    // 4
+tuple(pair<U0, U1>&& rhs);         // 5
 
 // new
-tuple(tuple<Us...>& rhs);                 // 4
-tuple(tuple<Us...>&& rhs) = delete;       // 5
-tuple(pair<U0, U1>&& rhs) = delete;       // 6
-tuple(const tuple<Us...>&& rhs);          // 7
-tuple(const pair<U0, U1>&& rhs);          // 8
-tuple(const tuple<Us...>&& rhs) = delete; // 9
-tuple(const pair<U0, U1>&& rhs) = delete; // 10
+tuple(tuple<Us...>& rhs);                 // 6
+tuple(pair<U0, U1>& rhs);                 // 7
+tuple(tuple<Us...>&& rhs) = delete;       // 8
+tuple(pair<U0, U1>&& rhs) = delete;       // 9
+tuple(const tuple<Us...>&& rhs);          // 10
+tuple(const pair<U0, U1>&& rhs);          // 11
+tuple(const tuple<Us...>&& rhs) = delete; // 12
+tuple(const pair<U0, U1>&& rhs) = delete; // 13
 ```
 
-Constructor 4 is required to handle the following case:
+Constructors 6 and 7 are required to handle cases like the following:
 ```cpp
 tuple<int> x{42};
 tuple<int&> y{x};
 ```
 
-Constructor 5 and constructor 6 have an opposite condition in the remarks clause from [`§20.4.2.1.20`](http://eel.is/c++draft/tuple.cnstr#20):
+Constructor 8 and constructor 9 have an opposite condition in the remarks clause from [`§20.4.2.1.20`](http://eel.is/c++draft/tuple.cnstr#20):
 > This constructor shall not participate in overload resolution unless `std::is_constructible<Ti, Ui&&>::value` is **`false`** for **any** `i`
 
-Constructors 7, 8, 9, and 10, have equivalent rules for `const` qualified rvalue reference to `tuple`s, as 1, 3, 5, and 6.
+Constructors 10, 11, 12, and 13, have equivalent rules for `const` qualified rvalue reference to `tuple`s, as 3, 5, 8, and 9.
 
 This would be sufficient to stop compilation before an rvalue reference to `tuple` has a chance to bind to a `const tuple&`.
 
-*Note: Even more overloads are required to properly handle non-const references to lvalue tuples. Perfect forwarding greatly reduces the number of constructors.*
+*Thirteen constructors to handle copying and moving correctly is hideous.*
 
 ## Braced-Init Constructors
 
